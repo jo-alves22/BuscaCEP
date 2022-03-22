@@ -13,7 +13,11 @@ root = Tk()
 
 class Application():
     def __init__(self) -> None:
+        self.trajeto = []
+        self.ceps_buscados = 0
         self.root = root
+        self.link_mapa = 'https://www.google.com.br/maps/dir/'
+        self.add_endereco = '{},{}+{}/'
         self.tela()
         self.frames_de_tela()
         self.widgets_frame1()
@@ -22,15 +26,17 @@ class Application():
     def tela(self):
         self.root.title("Constulta CEP")
         self.root.configure(background='#1e3743')
-        self.root.geometry("700x400")
+        self.root.geometry("700x500")
         self.root.resizable(True, True)
         self.root.maxsize(width= 900, height=1000)
         self.root.minsize(width= 500, height=400)
     def frames_de_tela(self):
         self.frame_1 = Frame(self.root, bd = 4, bg='#dfe3ee', highlightbackground='#759fe6', highlightthickness=3)
-        self.frame_1.place(relx= 0.02, rely=0.02, relwidth=0.96, relheight=0.25)
+        self.frame_1.place(relx= 0.02, rely=0.02, relwidth=0.96, relheight=0.20)
         self.frame_2 = Frame(self.root, bd = 4, bg='#dfe3ee', highlightbackground='#759fe6', highlightthickness=3)
-        self.frame_2.place(relx= 0.02, rely=0.28, relwidth=0.96, relheight=0.68)
+        self.frame_2.place(relx= 0.02, rely=0.23, relwidth=0.96, relheight=0.40)
+        self.frame_3 = Frame(self.root, bd = 4, bg='#dfe3ee', highlightbackground='#759fe6', highlightthickness=3)
+        self.frame_3.place(relx= 0.02, rely=0.64, relwidth=0.96, relheight=0.30)
         
     def widgets_frame1(self):
         ### Criação do botão de buscar
@@ -65,6 +71,7 @@ class Application():
         self.bt_ver_mapa.place(relx=0.7, rely=0.1, relwidth=0.3, relheight=0.38)
         
     def busca_cep(self):
+        self.ceps_buscados = self.ceps_buscados + 1
         self.cepbuscado = self.cep_entry.get()
         if len(self.cepbuscado) != 8:
             self.lb_erro.config(text='QUANTIDADE DE DIGITOS NÃO É VÁLIDA')
@@ -94,12 +101,33 @@ class Application():
                 self.estado = self.address['uf']
                 self.cep_entry.delete(0, END)
                 self.lb_erro.config(text='')
-          
+                self.trajeto.append(self.address)
+                
+                self.ceps_buscados = self.ceps_buscados + 1
+                
+                self.link_mapa = self.link_mapa + "" + self.add_endereco
+                #print(self.link_mapa)
+                
             else:
                 self.lb_erro.config(text='CEP INVÁLIDO')
                 self.cep_entry.delete(0, END)
     def ver_mapa(self):
-        webbrowser.open('https://www.google.com.br/maps/place/{},+{}+{},+{}'.format(self.logradouro, self.cidade, self.estado, self.cep))
+        
+        if len(self.trajeto) == 1:
+            webbrowser.open('https://www.google.com.br/maps/place/{},+{}+{},+{}'.format(self.logradouro, self.cidade, self.estado, self.cep))
+        if len(self.trajeto) == 2:
+            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf']))
+        if len(self.trajeto) == 3:
+            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf']))
+        if len(self.trajeto) == 4:
+            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf'], self.trajeto[3]['logradouro'], self.trajeto[3]['localidade'], self.trajeto[3]['uf']))
+        if len(self.trajeto) == 5:
+            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf'], self.trajeto[3]['logradouro'], self.trajeto[3]['localidade'], self.trajeto[3]['uf'], self.trajeto[4]['logradouro'], self.trajeto[4]['localidade'], self.trajeto[4]['uf']))
+        #    for registro in self.trajeto:
+        #        webbrowser.open(self.link_mapa.format(self.trajeto[registro]['logradouro'], self.trajeto[registro]['localidade'], self.trajeto[registro]['uf'], self.trajeto[registro + 1]['logradouro'], self.trajeto[registro + 1]['localidade'], self.trajeto[registro + 1]['uf'],))
+        #if len(self.trajeto) == 3:
+        #    webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf']))
+
         
               
     
