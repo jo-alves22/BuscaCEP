@@ -1,4 +1,5 @@
 from email.headerregistry import Address
+import itertools
 from tkinter import *
 from tkinter import font
 import pip._vendor.requests
@@ -16,7 +17,7 @@ class Application():
         self.trajeto = []
         self.ceps_buscados = 0
         self.root = root
-        self.link_mapa = 'https://www.google.com.br/maps/dir/'
+        self.link_mapa = 'https://www.google.com.br/maps/dir'
         self.add_endereco = '{},{}+{}/'
         self.tela()
         self.frames_de_tela()
@@ -105,29 +106,31 @@ class Application():
                 
                 self.ceps_buscados = self.ceps_buscados + 1
                 
-                self.link_mapa = self.link_mapa + "" + self.add_endereco
+                #self.link_mapa = self.link_mapa + "" + self.add_endereco
                 #print(self.link_mapa)
                 
             else:
                 self.lb_erro.config(text='CEP INVÁLIDO')
                 self.cep_entry.delete(0, END)
     def ver_mapa(self):
-        
         if len(self.trajeto) == 1:
-            webbrowser.open('https://www.google.com.br/maps/place/{},+{}+{},+{}'.format(self.logradouro, self.cidade, self.estado, self.cep))
-        if len(self.trajeto) == 2:
-            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf']))
-        if len(self.trajeto) == 3:
-            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf']))
-        if len(self.trajeto) == 4:
-            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf'], self.trajeto[3]['logradouro'], self.trajeto[3]['localidade'], self.trajeto[3]['uf']))
-        if len(self.trajeto) == 5:
-            webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}/{},{}+{}/{},{}+{}/'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf'], self.trajeto[3]['logradouro'], self.trajeto[3]['localidade'], self.trajeto[3]['uf'], self.trajeto[4]['logradouro'], self.trajeto[4]['localidade'], self.trajeto[4]['uf']))
-        #    for registro in self.trajeto:
-        #        webbrowser.open(self.link_mapa.format(self.trajeto[registro]['logradouro'], self.trajeto[registro]['localidade'], self.trajeto[registro]['uf'], self.trajeto[registro + 1]['logradouro'], self.trajeto[registro + 1]['localidade'], self.trajeto[registro + 1]['uf'],))
-        #if len(self.trajeto) == 3:
-        #    webbrowser.open('https://www.google.com.br/maps/dir/{},{}+{}/{},{}+{}/{},{}+{}'.format(self.trajeto[0]['logradouro'], self.trajeto[0]['localidade'], self.trajeto[0]['uf'], self.trajeto[1]['logradouro'], self.trajeto[1]['localidade'], self.trajeto[1]['uf'], self.trajeto[2]['logradouro'], self.trajeto[2]['localidade'], self.trajeto[2]['uf']))
-
+            webbrowser.open(
+                f"https://www.google.com.br/maps/place/{self.logradouro},+{self.cidade}+{self.estado},+{self.cep}"
+            )
+        else:
+            trajetos = [
+                    (
+                        f"{self.trajeto[i].get('logradouro')},",
+                        f"{self.trajeto[i].get('localidade')}+",
+                        f"{self.trajeto[i].get('uf')}/",
+                    )
+                for i in range(len(self.trajeto))
+            ]
+            
+            url_trajetos = "".join(list(itertools.chain(*trajetos)))
+            webbrowser.open(f"{self.link_mapa}/{url_trajetos}")
+       
+       
         
               
     
